@@ -1,1 +1,1 @@
-web: node ./PeerToPeer_VC/index.js
+web: node ./PeerToPeer-VC-v1/index.js
