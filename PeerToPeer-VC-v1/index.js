@@ -14,7 +14,7 @@ app.get('/', (req, res)=>{
 	res.send("This is a placeholder!");
 })
 
-app.listen(PORT, console.log(`I'm listening on port ${PORT}`));
+app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
 
 
 
