@@ -7,7 +7,7 @@ const http = require('http');
 const Mongo = require('mongodb');
 const URI = process.env.MONGODB_URI;
 
-const app = express()
+const app = express();
 
 //initial placeholder route
 app.get('/', (req, res)=>{
