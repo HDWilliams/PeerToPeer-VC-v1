@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from random import choice
 import random
 
@@ -17,7 +17,7 @@ def hello():
 
 @app.route('/login', methods=['GET'])
 def login():
-	return "RandomUser42"
+	return jsonify({"user": "RandomUser42"})
 
 if __name__ == '__main__':
 	# initialize test data now
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 	random.shuffle(user_list)
 	n = len(user_list)
 	pos = 0
-	
+
 	while n:
 		group_size = random.randint(1, n)
 		convo = (len(convos) + 1, [user_list[i] for i in range(pos, pos + group_size)])
