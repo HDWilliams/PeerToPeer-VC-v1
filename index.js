@@ -11,7 +11,7 @@ const app = express();
 
 //initial placeholder route
 app.get('/', (req, res)=>{
-	res.status(400);
+	res.status(200);
 	res.send("This is a placeholder!");
 })
 
