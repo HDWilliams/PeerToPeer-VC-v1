@@ -5,7 +5,7 @@ const express = require('express');
 const http = require('http');
 
 //import peerjs library
-const peer = require('peer');
+//const peer = require('peer');
 
 const Mongo = require('mongodb');
 const URI = process.env.MONGODB_URI;
