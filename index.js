@@ -18,7 +18,7 @@ app.get('/', (req, res)=>{
 	res.send("This is a placeholder!");
 })
 
-app.get('newchat', (req, res)=>{
+app.get('/newchat', (req, res)=>{
 	const peer = new Peer();
 	res.status(200);
 	res.send(`Your Id is ${peer.id}`);
