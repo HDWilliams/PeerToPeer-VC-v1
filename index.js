@@ -5,7 +5,7 @@ const express = require('express');
 const http = require('http');
 
 //import peerjs library
-import Peer from 'peerjs';
+//import Peer from 'peerjs';
 
 const Mongo = require('mongodb');
 const URI = process.env.MONGODB_URI;
@@ -19,9 +19,9 @@ app.get('/', (req, res)=>{
 })
 
 app.get('/newchat', (req, res)=>{
-	const peer = new Peer();
+	//const peer = new Peer();
 	res.status(200);
-	res.send(`Your Id is ${peer.id}`);
+	res.send(`Your Id is `);
 
 })
 
