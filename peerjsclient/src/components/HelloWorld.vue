@@ -20,9 +20,9 @@ export default {
   },
   methods: {
       testPeer() {
-          console.log('test peer');
+          console.log('test pe11er');
           const peerOptions = {
-            port:443,
+            port: 9000,
             host: 'https://vc-v1.herokuapp.com',
             path: '/peerjs',
           }
