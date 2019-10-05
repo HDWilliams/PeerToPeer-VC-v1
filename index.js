@@ -1,5 +1,5 @@
 //require necessary modules and set port
-const PORT = 9000 || 5000;
+const PORT = process.env.PORT || 5000;
 
 const express = require('express');
 const http = require('http');
