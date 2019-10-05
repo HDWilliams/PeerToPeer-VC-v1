@@ -27,9 +27,14 @@ app.get('/newchat', (req, res)=>{
 
 })
 
+const peerServerOptions: {
+	debug: true,
+}
+const peerServer =  require('peer').ExpressPeerServer(SERVER, peerServerOptions);
 
-app.use('/peerjs', require('peer').ExpressPeerServer(SERVER, {
-	debug: true
-}))
+app.use('/peerjs', peerServer);
 
 
+peerServer.on('connection', (client) => {
+	console.log('Connection established from ', client);
+})
