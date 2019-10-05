@@ -29,6 +29,8 @@
       <button @click="testPeer"> Test Peerjs Connection </button>
 
     </div>
+     <video ref="video" id="video" width="640" height="480"></video>
+
   </div>
 </template>
 
@@ -43,6 +45,34 @@ export default {
   props: {
     msg: String
   },
+  mounted() {
+      console.log(this.$refs);
+      console.log(Object.keys(this.$refs));
+      console.log(this.$refs.video);
+
+      this.video = this.$refs.video;
+      const thisContext = this;
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {            
+              this.video.srcObject = stream;
+              const promise = this.video.play();
+
+              if (promise !== undefined) {
+                promise.then(_ => {
+                    console.log('playback started');
+                  // Automatic playback started!
+                  // Show playing UI.
+                })
+                .catch(error => {
+                    console.log('error');
+                    console.log(error);
+                  // Auto-play was prevented
+                  // Show paused UI.
+                });
+              }
+          });
+      }
+  },
   data() {
      return {
         peerInstance: null,
@@ -51,6 +81,7 @@ export default {
         destPeerID: null,
         destMsg: '',
         receivedMsg: '',
+        video: {},
      }
   },
   methods: {
@@ -67,6 +98,40 @@ export default {
               thisContext.peerID = id;
               thisContext.peerInstance = peer;
           });
+          console.log(navigator.getUserMedia);
+
+
+          // thisContext.video = this.$refs.video;
+          // console.log(thisContext.video);
+          // console.log(this.$refs);
+          // console.log(Object.keys(this.$refs));
+          // console.log(this.$refs.video);
+          // if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          //     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+          //         thisContext.video.src = window.URL.createObjectURL(stream);
+          //         thisContext.video.play();
+          //     });
+          // }
+
+          // const getUserMedia = MediaDevices.getUserMedia();
+          // const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+          // getUserMedia({video: true, audio: true}, function(stream) {
+          //   thisContext.peerVideo = stream;
+          // }, function(err) {
+          //   console.log('Failed to get local stream' ,err);
+          // });
+
+          navigator.mediaDevices.getUserMedia({video:true, audio: true}).then(function(mediaStream){
+            console.log(mediaStream);
+                  thisContext.peerVideo = mediaStream;
+                  console.log(thisContext.$refs);
+                  thisContext.$refs.video.src = mediaStream;
+                  thisContext.$refs.video.play();
+                   // window.stream = mediaStream;     
+                   // video.src = URL.createObjectURL(mediaStream);    
+                   // video.play(); 
+          });
+
           peer.on('connection', function(conn) {
                 conn.on('data', function(data) {
                     clearTimeout(RESET_TIMEOUT);
@@ -82,7 +147,7 @@ export default {
           const thisContext = this;
           conn.on('open', function() {
               conn.send(thisContext.destMsg);
-          })
+          });
       }
   }
 }
