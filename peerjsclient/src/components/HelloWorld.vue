@@ -22,11 +22,12 @@ export default {
       testPeer() {
           console.log('test pe11er');
           const peerOptions = {
-            port: 9000,
+            secure: true,
+            port: 443,
             host: 'vc-v1.herokuapp.com',
-            path: '/peerjs',
+            path: '/peerjs'
           }
-          const peer = new Peer('1234', peerOptions);
+          const peer = new Peer(peerOptions);          
           console.log(peer);
       }
   }
