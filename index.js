@@ -12,6 +12,8 @@ const URI = process.env.MONGODB_URI;
 
 const app = express();
 
+const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
+
 //initial placeholder route
 app.get('/', (req, res)=>{
 	res.status(200);
@@ -25,7 +27,9 @@ app.get('/newchat', (req, res)=>{
 
 })
 
-app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
 
+app.use('/peerjs', require('peer').ExpressPeerServer(SERVER, {
+	debug: true
+}))
 
 
