@@ -27,7 +27,7 @@ app.get('/newchat', (req, res)=>{
 
 })
 
-const peerServerOptions: {
+const peerServerOptions = {
 	debug: true,
 }
 const peerServer =  require('peer').ExpressPeerServer(SERVER, peerServerOptions);
