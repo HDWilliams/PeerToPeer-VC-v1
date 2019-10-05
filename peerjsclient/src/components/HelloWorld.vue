@@ -11,10 +11,23 @@
     <div v-if="peerInstance">
         Yayy connection established! 
         My Peer ID is {{ peerID }}
-        <!-- <button @click="sendData">Send Data to Peer</button> -->
+
+        <div></div>
+      Peer ID: <input v-model="destPeerID" placeholder="Specify Peer ID">
+      Message: <input v-model="destMsg" placeholder="type message here">
+      <div/>
+      <button v-if="destPeerID && destMsg != ''"
+              @click="sendToPeer"> Send Message to Peer</button>
+
+      <div v-if="receivedMsg != ''">
+          <h1>Your friend sent you a message!</h1>
+          <h1>'{{ receivedMsg }}'</h1>
+          <small>This message will self-destruct in 10 seconds</small>
+      </div>
     </div>
     <div v-else>
       <button @click="testPeer"> Test Peerjs Connection </button>
+
     </div>
   </div>
 </template>
@@ -22,6 +35,9 @@
 <script>
 
 import Peer from 'peerjs';
+
+let RESET_TIMEOUT = null;
+
 export default {
   name: 'HelloWorld',
   props: {
@@ -32,11 +48,13 @@ export default {
         peerInstance: null,
         peerConn: null,
         peerID: null,
+        destPeerID: null,
+        destMsg: '',
+        receivedMsg: '',
      }
   },
   methods: {
       testPeer() {
-          console.log('test pe11er');
           const peerOptions = {
             secure: true,
             port: 443,
@@ -46,12 +64,32 @@ export default {
           const peer = new Peer(peerOptions); 
           const thisContext = this;
           peer.on('open', function(id) {
-              console.log('my peer id is', id);
               thisContext.peerID = id;
               thisContext.peerInstance = peer;
           });
-          console.log(peer);
+          peer.on('connection', function(conn) {
+              conn.on('open', function() {
+                conn.on('data', function(data) {
+                    clearTimeout(RESET_TIMEOUT);
+                    thisContext.receivedMsg = data;
+                    RESET_TIMEOUT = setTimeout(function () {
+                        thisContext.receivedMsg = '';
+                    }, 10000);
+              });
+              });
+              
+          });
+
+
+
       },
+      sendToPeer() {
+          const conn = this.peerInstance.connect(this.destPeerID);
+          const thisContext = this;
+          conn.on('open', function() {
+              conn.send(thisContext.destMsg);
+          })
+      }
   }
 }
 </script>
