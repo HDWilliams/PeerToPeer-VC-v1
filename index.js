@@ -38,3 +38,6 @@ app.use('/peerjs', peerServer);
 peerServer.on('connection', (client) => {
 	console.log('Connection established from ', client);
 })
+peerServer.on('disconnect', (client) => {
+	console.log('Disconnection from ', client);
+})
