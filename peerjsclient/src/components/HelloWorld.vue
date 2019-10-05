@@ -68,20 +68,14 @@ export default {
               thisContext.peerInstance = peer;
           });
           peer.on('connection', function(conn) {
-              conn.on('open', function() {
                 conn.on('data', function(data) {
                     clearTimeout(RESET_TIMEOUT);
                     thisContext.receivedMsg = data;
                     RESET_TIMEOUT = setTimeout(function () {
                         thisContext.receivedMsg = '';
                     }, 10000);
-              });
-              });
-              
+              });              
           });
-
-
-
       },
       sendToPeer() {
           const conn = this.peerInstance.connect(this.destPeerID);
