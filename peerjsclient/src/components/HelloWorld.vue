@@ -6,7 +6,16 @@
       check out the
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
     </p>
-    <button @click="testPeer"> Test Peerjs Connection </button>
+
+
+    <div v-if="peerInstance">
+        Yayy connection established! 
+        My Peer ID is {{ peerID }}
+        <!-- <button @click="sendData">Send Data to Peer</button> -->
+    </div>
+    <div v-else>
+      <button @click="testPeer"> Test Peerjs Connection </button>
+    </div>
   </div>
 </template>
 
@@ -18,6 +27,13 @@ export default {
   props: {
     msg: String
   },
+  data() {
+     return {
+        peerInstance: null,
+        peerConn: null,
+        peerID: null,
+     }
+  },
   methods: {
       testPeer() {
           console.log('test pe11er');
@@ -26,10 +42,16 @@ export default {
             port: 443,
             host: 'vc-v1.herokuapp.com',
             path: '/peerjs'
-          }
-          const peer = new Peer(peerOptions);          
+          };
+          const peer = new Peer(peerOptions); 
+          const thisContext = this;
+          peer.on('open', function(id) {
+              console.log('my peer id is', id);
+              thisContext.peerID = id;
+              thisContext.peerInstance = peer;
+          });
           console.log(peer);
-      }
+      },
   }
 }
 </script>
