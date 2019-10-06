@@ -23,7 +23,7 @@ MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
   console.log('connected to db');
   console.log(client);
-  db = client;
+  db = client.db('heroku_xr0pdhrx');
 });
 
 //establish variables for db
