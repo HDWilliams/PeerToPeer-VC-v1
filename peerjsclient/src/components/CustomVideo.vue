@@ -17,48 +17,23 @@ export default {
   },
   mounted() {
       if (this.stream) {
-            console.log('found a stream');
-           this.video = this.$refs.video;
-            const thisContext = this;
-            this.video.srcObject = this.stream;
-            const promise = this.video.play();
-            if (promise !== undefined) {
-              promise.then(_ => {
-                  console.log('playback started');
-                // Automatic playback started!
-                // Show playing UI.
-              })
-              .catch(error => {
-                  console.log('error');
-                  console.log(error);
-                // Auto-play was prevented
-                // Show paused UI.
-              });
-            }
+          this.video = this.$refs.video;
+          this.video.srcObject = this.stream;
+          const promise = this.video.play();
+          if (promise !== undefined) {
+            promise.then(_ => {
+                console.log('playback started');
+              // Automatic playback started!
+              // Show playing UI.
+            })
+            .catch(error => {
+                console.log('error');
+                console.log(error);
+              // Auto-play was prevented
+              // Show paused UI.
+            });
+          }
       }
-     
-
-      // if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      //     navigator.mediaDevices.getUserMedia({ video: true, audio:true }).then(stream => {            
-      //         this.video.srcObject = stream;
-      //         const promise = this.video.play();
-
-      //         if (promise !== undefined) {
-      //           promise.then(_ => {
-      //               console.log('playback started');
-      //             // Automatic playback started!
-      //             // Show playing UI.
-      //           })
-      //           .catch(error => {
-      //               console.log('error');
-      //               console.log(error);
-      //             // Auto-play was prevented
-      //             // Show paused UI.
-      //           });
-      //         }
-      //     });
-      // }
-
   },
   data() {
      return {

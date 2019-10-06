@@ -53,30 +53,32 @@ export default {
     msg: String
   },
   created() {
-      // const thisContext = this;
-      // if (this.peerInstance) {
-      //         console.log('peer instance exists');
-      //         this.peerInstance.on('call', function(call) {
-      //           console.log('on call');
-      //           if( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
-      //               navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
-      //                 call.answer(stream); // Answer the call with an A/V stream.
-      //                 call.on('stream', function(remoteStream) {
-      //                   thisContext.remoteStream = remoteStream;
-      //                   thisContext.videoKey = true; 
-      //                   // Show stream in some video/canvas element.
-      //                 });
-      //               }).catch((err) => {
-      //                 console.log('Failed to get local stream' ,err);
-      //               });
-      //           }
-      //         });
-      //     }
-      //     else {
-      //       console.log('peer doesnt exist');
-      //     }
+
   },
   mounted() {
+    // const thisContext = this;
+    //   console.log(this.peerInstance);
+    //       if (this.peerInstance) {
+    //           console.log('peer instance exists');
+    //           this.peerInstance.on('call', function(call) {
+    //             console.log('on call');
+    //             if( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+    //                 navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+    //                   call.answer(stream); // Answer the call with an A/V stream.
+    //                   call.on('stream', function(remoteStream) {
+    //                     thisContext.remoteStream = remoteStream;
+    //                     thisContext.videoKey = true; 
+    //                     // Show stream in some video/canvas element.
+    //                   });
+    //                 }).catch((err) => {
+    //                   console.log('Failed to get local stream' ,err);
+    //                 });
+    //             }
+    //           });
+    //       }
+    //       else {
+    //         console.log('peer doesnt exist');
+    //       }
       
   },
   data() {
@@ -88,7 +90,7 @@ export default {
         destMsg: '',
         receivedMsg: '',
         remoteStream: new MediaStream(),
-        videoKey: false,
+        videoKey: 0,
      }
   },
   methods: {
@@ -101,9 +103,10 @@ export default {
                 if( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
                     navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
                       call.answer(stream); // Answer the call with an A/V stream.
+                      console.log('answered call');
                       call.on('stream', function(remoteStream) {
                         thisContext.remoteStream = remoteStream;
-                        thisContext.videoKey = true; 
+                        thisContext.videoKey++; 
                         // Show stream in some video/canvas element.
                       });
                     }).catch((err) => {
@@ -119,12 +122,6 @@ export default {
       callPeer() {
           console.log('trying to call peer', this.destPeerID);
           const thisContext = this;
-          navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
-               console.log(stream);
-            }).catch((err) => {
-                console.log('Failed to get local stream' ,err);
-            });
-
           if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
             navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) =>  {
                 console.log('got local stream');
@@ -134,7 +131,7 @@ export default {
                 console.log(stream);
                 call.on('stream', function(remoteStream) {
                     thisContext.remoteStream = remoteStream;
-                    thisContext.videoKey = true;
+                    thisContext.videoKey++;
                     // Show stream in some video/canvas element.
                 });
             }).catch((err) =>  {
