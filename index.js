@@ -19,17 +19,16 @@ const MongoClient = require('mongodb').MongoClient;
 // 	return client.db('heroku_xr0pdhrx');
 // })
 
-let db;
-MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
+var db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
   console.log('connected to db');
-  db = client;
   console.log(client);
+  db = client;
 });
 
 //establish variables for db
-const OpenChats = db.collection('OpenChats');
-const Users = db.collection('Users');
+// const OpenChats = db.collection('OpenChats');
+// const Users = db.collection('Users');
 
 
 const app = express();
@@ -53,12 +52,12 @@ app.get('/', (req, res)=>{
 //return a list of all open chats in the db. Needs to be set up with routing before use
 app.get('/getOpenChats', (req, res)=>{
 	res.status(200);
-	OpenChats.find({}).toArray(function(err, chats) {
-		assert.equal(err, null);
-		return chats;
-	})
-	res.send(chats);
-
+	db.collection('OpenChats', function(error, coll) {
+		coll.find({}).toArray(function(err, chats) {
+			assert.equal(err, null);
+			res.send(chats);
+		})
+	});
 })
 
 const peerServerOptions = {
@@ -71,13 +70,18 @@ app.use('/peerjs', peerServer);
 
 peerServer.on('connection', (client) => {
 	console.log('Connection established from ', client);
-	Users.insert({UserID: client}, function(err, results) {
-		console.log('client ID added to Users collection');
+	db.collection('Users', function(error, coll) {
+		coll.insert({UserID: client}, function(err, results) {
+			console.log('client ID added to Users collection');
+		});
 	});
+	// Users.insert({UserID: client}, function(err, results) {
+	// 	console.log('client ID added to Users collection');
+	// });
 })
 peerServer.on('disconnect', (client) => {
 	console.log('Disconnection from ', client);
-	Users.deleteOne({UserID: client}, function(err, results) {
-		console.log('User document removed');
-	});
+	// Users.deleteOne({UserID: client}, function(err, results) {
+	// 	console.log('User document removed');
+	// });
 })
