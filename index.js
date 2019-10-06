@@ -9,6 +9,7 @@ const assert = require('assert');
 //testing locally only
 const URI = 'mongodb://heroku_xr0pdhrx:2nv9q54oe2iaa9hjv7csdbig74@ds261616.mlab.com:61616/heroku_xr0pdhrx';
 
+console.log(process.env);
 const MongoClient = require('mongodb').MongoClient;
 
 //set up db connection on startup
