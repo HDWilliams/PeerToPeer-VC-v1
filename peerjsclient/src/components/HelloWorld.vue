@@ -46,14 +46,11 @@ export default {
     msg: String
   },
   mounted() {
-      console.log(this.$refs);
-      console.log(Object.keys(this.$refs));
-      console.log(this.$refs.video);
 
       this.video = this.$refs.video;
       const thisContext = this;
       if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {            
+          navigator.mediaDevices.getUserMedia({ video: true, audio:true }).then(stream => {            
               this.video.srcObject = stream;
               const promise = this.video.play();
 
@@ -101,37 +98,8 @@ export default {
           console.log(navigator.getUserMedia);
 
 
-          // thisContext.video = this.$refs.video;
-          // console.log(thisContext.video);
-          // console.log(this.$refs);
-          // console.log(Object.keys(this.$refs));
-          // console.log(this.$refs.video);
-          // if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          //     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-          //         thisContext.video.src = window.URL.createObjectURL(stream);
-          //         thisContext.video.play();
-          //     });
-          // }
-
-          // const getUserMedia = MediaDevices.getUserMedia();
-          // const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-          // getUserMedia({video: true, audio: true}, function(stream) {
-          //   thisContext.peerVideo = stream;
-          // }, function(err) {
-          //   console.log('Failed to get local stream' ,err);
-          // });
-
-          navigator.mediaDevices.getUserMedia({video:true, audio: true}).then(function(mediaStream){
-            console.log(mediaStream);
-                  thisContext.peerVideo = mediaStream;
-                  console.log(thisContext.$refs);
-                  thisContext.$refs.video.src = mediaStream;
-                  thisContext.$refs.video.play();
-                   // window.stream = mediaStream;     
-                   // video.src = URL.createObjectURL(mediaStream);    
-                   // video.play(); 
-          });
-
+          console.log(this.$refs);
+          
           peer.on('connection', function(conn) {
                 conn.on('data', function(data) {
                     clearTimeout(RESET_TIMEOUT);

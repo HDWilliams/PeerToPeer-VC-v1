@@ -12,10 +12,11 @@ const URI = 'mongodb://heroku_xr0pdhrx:2nv9q54oe2iaa9hjv7csdbig74@ds261616.mlab.
 const MongoClient = require('mongodb').MongoClient;
 
 //set up db connection on startup
+let db;
 MongoClient.connect(URI, function(err, client) {
 	assert.equal(null, err);
 	console.log('Connected to DB');
-	const db = client.db('heroku_xr0pdhrx');
+	db = client.db('heroku_xr0pdhrx');
 })
 //establish variables for db
 const OpenChats = db.collection('OpenChats');
