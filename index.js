@@ -12,18 +12,26 @@ const URI = 'mongodb://heroku_xr0pdhrx:2nv9q54oe2iaa9hjv7csdbig74@ds261616.mlab.
 const MongoClient = require('mongodb').MongoClient;
 
 //set up db connection on startup
-let db;
-MongoClient.connect(URI, function(err, client) {
+const db = MongoClient.connect(URI, function(err, client) {
 	assert.equal(null, err);
 	console.log('Connected to DB');
-	db = client.db('heroku_xr0pdhrx');
+	return client.db('heroku_xr0pdhrx');
 })
+
 //establish variables for db
 const OpenChats = db.collection('OpenChats');
 const Users = db.collection('Users');
 
 
 const app = express();
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", '*');
+    res.header("Access-Control-Allow-Credentials", true);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+    next();
+});
 
 const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
 
