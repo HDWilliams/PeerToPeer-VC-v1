@@ -17,6 +17,7 @@ export default {
   },
   mounted() {
       if (this.stream) {
+          console.log('u');
           this.video = this.$refs.video;
           this.video.srcObject = this.stream;
           const promise = this.video.play();

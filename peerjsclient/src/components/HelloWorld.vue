@@ -30,7 +30,10 @@
       <button @click="answerPeer">
         Recieve Call
       </button>
-      <CustomVideo v-show="videoKey" :stream="remoteStream"/>
+      <button @click="refreshVideo">
+        Refresh Video
+      </button>
+      <CustomVideo :key="videoKey" :stream="remoteStream"/>
 
     </div>
 
@@ -56,6 +59,7 @@ export default {
 
   },
   mounted() {
+    this.answerPeer();
     // const thisContext = this;
     //   console.log(this.peerInstance);
     //       if (this.peerInstance) {
@@ -94,6 +98,10 @@ export default {
      }
   },
   methods: {
+      refreshVideo() {
+          this.videoKey++;
+          console.log(this.videoKey);
+      },
       answerPeer() {
           const thisContext = this;
           if (this.peerInstance) {
