@@ -18,9 +18,13 @@ const MongoClient = require('mongodb').MongoClient;
 // 	console.log('Connected to DB');
 // 	return client.db('heroku_xr0pdhrx');
 // })
-var db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
+
+let db;
+MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
+  console.log('connected to db');
   db = client;
+  console.log(client);
 });
 
 //establish variables for db
