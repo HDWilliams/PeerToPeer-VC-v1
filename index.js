@@ -19,7 +19,7 @@ const MongoClient = require('mongodb').MongoClient;
 // })
 var db = MongoClient.connect(URI, function (error, client) {
   assert.equal(null, error);
-  db = client.db('heroku_xr0pdhrx');
+  db = client;
 });
 
 //establish variables for db
