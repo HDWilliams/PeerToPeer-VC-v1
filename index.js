@@ -12,7 +12,7 @@ const URI = 'mongodb://heroku_xr0pdhrx:2nv9q54oe2iaa9hjv7csdbig74@ds261616.mlab.
 const MongoClient = require('mongodb').MongoClient;
 
 //set up db connection on startup
-var db = mongoClient.connect(mongoUri, function (error, client) {
+var db = MongoClient.connect(mongoUri, function (error, client) {
   assert.equal(null, error);
   db = client;
 });
