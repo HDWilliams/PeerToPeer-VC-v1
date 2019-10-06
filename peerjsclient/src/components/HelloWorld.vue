@@ -24,20 +24,27 @@
           <h1>'{{ receivedMsg }}'</h1>
           <small>This message will self-destruct in 10 seconds</small>
       </div>
+      <button @click="callPeer">
+        Initiate Video Call with Peer
+      </button>
+      <button @click="answerPeer">
+        Recieve Call
+      </button>
+      <CustomVideo v-show="videoKey" :stream="remoteStream"/>
+
     </div>
+
     <div v-else>
       <button @click="testPeer"> Test Peerjs Connection </button>
 
     </div>
-     <video ref="video" id="video" width="640" height="480"></video>
-
   </div>
 </template>
 
 <script>
 
 import Peer from 'peerjs';
-
+import CustomVideo from './CustomVideo.vue';
 let RESET_TIMEOUT = null;
 
 export default {
@@ -45,30 +52,32 @@ export default {
   props: {
     msg: String
   },
+  created() {
+      // const thisContext = this;
+      // if (this.peerInstance) {
+      //         console.log('peer instance exists');
+      //         this.peerInstance.on('call', function(call) {
+      //           console.log('on call');
+      //           if( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+      //               navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+      //                 call.answer(stream); // Answer the call with an A/V stream.
+      //                 call.on('stream', function(remoteStream) {
+      //                   thisContext.remoteStream = remoteStream;
+      //                   thisContext.videoKey = true; 
+      //                   // Show stream in some video/canvas element.
+      //                 });
+      //               }).catch((err) => {
+      //                 console.log('Failed to get local stream' ,err);
+      //               });
+      //           }
+      //         });
+      //     }
+      //     else {
+      //       console.log('peer doesnt exist');
+      //     }
+  },
   mounted() {
-
-      this.video = this.$refs.video;
-      const thisContext = this;
-      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true, audio:true }).then(stream => {            
-              this.video.srcObject = stream;
-              const promise = this.video.play();
-
-              if (promise !== undefined) {
-                promise.then(_ => {
-                    console.log('playback started');
-                  // Automatic playback started!
-                  // Show playing UI.
-                })
-                .catch(error => {
-                    console.log('error');
-                    console.log(error);
-                  // Auto-play was prevented
-                  // Show paused UI.
-                });
-              }
-          });
-      }
+      
   },
   data() {
      return {
@@ -78,10 +87,61 @@ export default {
         destPeerID: null,
         destMsg: '',
         receivedMsg: '',
-        video: {},
+        remoteStream: new MediaStream(),
+        videoKey: false,
      }
   },
   methods: {
+      answerPeer() {
+          const thisContext = this;
+          if (this.peerInstance) {
+              console.log('peer instance exists');
+              this.peerInstance.on('call', function(call) {
+                console.log('on call');
+                if( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+                    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+                      call.answer(stream); // Answer the call with an A/V stream.
+                      call.on('stream', function(remoteStream) {
+                        thisContext.remoteStream = remoteStream;
+                        thisContext.videoKey = true; 
+                        // Show stream in some video/canvas element.
+                      });
+                    }).catch((err) => {
+                      console.log('Failed to get local stream' ,err);
+                    });
+                }
+              });
+          }
+          else {
+            console.log('peer doesnt exist');
+          }
+      },
+      callPeer() {
+          console.log('trying to call peer', this.destPeerID);
+          const thisContext = this;
+          navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+               console.log(stream);
+            }).catch((err) => {
+                console.log('Failed to get local stream' ,err);
+            });
+
+          if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+            navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) =>  {
+                console.log('got local stream');
+                const call = thisContext.peerInstance.call(thisContext.destPeerID, stream);
+                console.log('initiated call');
+                console.log(call);
+                console.log(stream);
+                call.on('stream', function(remoteStream) {
+                    thisContext.remoteStream = remoteStream;
+                    thisContext.videoKey = true;
+                    // Show stream in some video/canvas element.
+                });
+            }).catch((err) =>  {
+                console.log('Failed to get local stream' ,err);
+            });
+          }      
+      },
       testPeer() {
           const peerOptions = {
             secure: true,
@@ -99,7 +159,7 @@ export default {
 
 
           console.log(this.$refs);
-          
+
           peer.on('connection', function(conn) {
                 conn.on('data', function(data) {
                     clearTimeout(RESET_TIMEOUT);
@@ -117,6 +177,9 @@ export default {
               conn.send(thisContext.destMsg);
           });
       }
+  },
+  components: {
+    CustomVideo
   }
 }
 </script>
