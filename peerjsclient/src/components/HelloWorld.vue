@@ -18,7 +18,6 @@
       <div/>
       <button v-if="destPeerID && destMsg != ''"
               @click="sendToPeer"> Send Message to Peer</button>
-
       <div v-if="receivedMsg != ''">
           <h1>Your friend sent you a message!</h1>
           <h1>'{{ receivedMsg }}'</h1>
@@ -34,9 +33,7 @@
         Refresh Video
       </button>
       <CustomVideo :key="videoKey" :stream="remoteStream"/>
-
     </div>
-
     <div v-else>
       <button @click="testPeer"> Test Peerjs Connection </button>
 
