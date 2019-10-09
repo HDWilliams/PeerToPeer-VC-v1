@@ -5,9 +5,8 @@ const express = require('express');
 const http = require('http');
 const assert = require('assert');
 //import peerjs library
-//const URI = process.env.MONGODB_URI;
-//testing locally only
-const URI = 'mongodb://heroku_xr0pdhrx:2nv9q54oe2iaa9hjv7csdbig74@ds261616.mlab.com:61616/heroku_xr0pdhrx';
+const URI = process.env.MONGODB_URI;
+
 
 console.log(process.env);
 const MongoClient = require('mongodb').MongoClient;
@@ -59,6 +58,37 @@ app.get('/getOpenChats', (req, res)=>{
 	});
 })
 
+//openChats Document format
+	// 1.) Array of IDs of people in chat
+	// 2.) isAvailable boolean, is someone trying to join the chat?
+
+//Person is making a 'Topic'
+//POST Request Endpoint
+//Creates a document in openChats on Mongo
+//Adds the creator in to list of participants
+app.post('/createChat', (req, res) =>{
+
+})
+
+//person trying to join a topic
+//POST Request Endpoint
+//Set Boolean value to False until new user is connected
+app.post('/joinChat', (req, res) =>{
+	
+})
+//Redirect to GET request Send the client a list of all members of current chat
+//will need to have some sort of change stream or the like for the boolean value
+app.get('/available', (req, res) =>{
+	
+})
+
+//Post Request Endpoint
+//Once the new user is all connected, adds the new user to the chat members list
+//sets the isAvailable Boolean to True
+app.post('/joined', (req, res) =>{
+	
+})
+
 const peerServerOptions = {
 	debug: false,
 }
@@ -74,9 +104,6 @@ peerServer.on('connection', (client) => {
 			console.log('client ID added to Users collection');
 		});
 	});
-	// Users.insert({UserID: client}, function(err, results) {
-	// 	console.log('client ID added to Users collection');
-	// });
 })
 peerServer.on('disconnect', (client) => {
 	console.log('Disconnection from ', client);
