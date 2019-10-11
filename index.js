@@ -50,7 +50,7 @@ app.get('/', (req, res)=>{
 //return a list of all open chats in the db. Needs to be set up with routing before use
 app.get('/getOpenChats', (req, res)=>{
 	res.status(200);
-	db.collection('OpenChats', function(error, coll) {
+	db.collection('openChats', function(error, coll) {
 		coll.find({}).toArray(function(err, chats) {
 			assert.equal(err, null);
 			res.send(chats);
@@ -66,7 +66,36 @@ app.get('/getOpenChats', (req, res)=>{
 //POST Request Endpoint
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
+
+//need userID and chat name is req body
+//first check if user is in a chat rn, if they are tell them they cannot
 app.post('/createChat', (req, res) =>{
+	res.status(200);
+	let currentChat = null;
+	db.collection('users', function(err, coll){
+		currentChat = coll.find({userID: req.body.userID})
+		return currentChat;
+	})
+	//if True, create chat, if not send error message or redirect perhaps
+	if (currentChat === null){
+		db.collection('openChats', function(error, coll) {
+			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
+				assert.equal(err, null);
+				res.send(`You are now the proud owner of a Topic...${records[0]._id}`);
+				let currentChat = records[0]._id;
+				return currentChat;
+			})
+		db.collection('users', function(err, coll){
+			coll.insert({currentChat: currentChat}, function(err, records){
+				assert.equal(err, null);
+				res.send(`Chat ${currentChat} has been stored in your account info while the chat is open`);
+			})
+			
+	} else {
+		res.send('You are already in a chat...');
+	}
+	
+	})
 
 })
 
@@ -99,15 +128,15 @@ app.use('/peerjs', peerServer);
 
 peerServer.on('connection', (client) => {
 	console.log('Connection established from ', client);
-	db.collection('Users', function(error, coll) {
-		coll.insert({UserID: client}, function(err, results) {
+	db.collection('users', function(error, coll) {
+		coll.insert({userID: client}, function(err, results) {
 			console.log('client ID added to Users collection');
 		});
 	});
 })
 peerServer.on('disconnect', (client) => {
 	console.log('Disconnection from ', client);
-	// Users.deleteOne({UserID: client}, function(err, results) {
+	// Users.deleteOne({userID: client}, function(err, results) {
 	// 	console.log('User document removed');
 	// });
 })
