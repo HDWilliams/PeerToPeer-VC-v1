@@ -154,12 +154,13 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 			else {
 				console.log(group);
 				const newMembers = group.members.push(userID);
-				coll.update({topicName: topicToJoin}, 
+				coll.updateOne({topicName: topicToJoin}, 
 					{ $set: { 
 						members: newMembers, 
 						isAvailable: true 
 					}}, function(err, updatedGroup) {
 						if (!err) {
+							console.log(updatedGroup);
 							console.log('successfully joined group with no issues!')
 							res.status(200);
 							res.send();
