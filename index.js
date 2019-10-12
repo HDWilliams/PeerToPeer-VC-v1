@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 5000;
 const express = require('express');
 const http = require('http');
 const assert = require('assert');
+const bodyParser = require('body-parser')
 //import peerjs library
 const URI = process.env.MONGODB_URI;
 
@@ -39,6 +40,17 @@ app.use(function(req, res, next) {
     next();
 });
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
+app.use(function (req, res) {
+  res.setHeader('Content-Type', 'text/plain')
+  res.write('you posted:\n')
+  res.end(JSON.stringify(req.body, null, 2))
+  
 const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
 
 //initial placeholder route
@@ -108,7 +120,7 @@ app.post('/createChat', (req, res) =>{
 	})
 
 }) //redirect to something???
-	
+
 
 //person trying to join a topic
 //POST Request Endpoint
