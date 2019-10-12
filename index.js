@@ -208,7 +208,7 @@ app.post('/joinedGroupFail', (req, res) => {
 				{ $set: { isAvailable: true
 				}}, 
 				function(err, updatedGroup){
-					// console.log(updatedGroup);
+					console.log(updatedGroup);
 					if (err){
 						res.status(500);
 						res.send({errorMsg: "Database error occurred while joining the group"});
