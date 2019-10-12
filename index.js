@@ -9,25 +9,14 @@ const bodyParser = require('body-parser')
 const URI = process.env.MONGODB_URI;
 
 
-console.log(process.env);
 const MongoClient = require('mongodb').MongoClient;
 
-//set up db connection on startup
-// const db = MongoClient.connect(URI, function(err, client) {
-// 	assert.equal(null, err);
-// 	console.log('Connected to DB');
-// 	return client.db('heroku_xr0pdhrx');
-// })
 let db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
   console.log('connected to db');
   console.log(client);
   db = client.db('heroku_xr0pdhrx');
 });
-
-//establish variables for db
-// const OpenChats = db.collection('OpenChats');
-// const Users = db.collection('Users');
 
 
 const app = express();
@@ -46,12 +35,33 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
+
+// PEER SERVER SETUP 
+const peerServerOptions = {
+	debug: false,
+}
+const peerServer =  require('peer').ExpressPeerServer(SERVER, peerServerOptions);
+
+app.use('/peerjs', peerServer);
+
+
+// MongoDB Collections and Formmating
+// openChats: A collection that contains all of the active chat groups 
+// Example document for 'openChats'
+//  {
+// 	members: ['id1', 'id2', 'id3'], // list of ids of the users 
+// 	isAvailable: false // determines if the group can be joined 
+// 	topic: 'Dolphin Health' // the chat topic in basic string format 
+// }
+
+
+
 // app.use(function (req, res) {
 //   res.setHeader('Content-Type', 'text/plain')
 //   res.write('you posted:\n')
 //   res.end(JSON.stringify(req.body, null, 2))
   
-const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
 
 //initial placeholder route
 app.get('/', (req, res)=>{
@@ -60,7 +70,7 @@ app.get('/', (req, res)=>{
 })
 
 //return a list of all open chats in the db. Needs to be set up with routing before use
-app.get('/getOpenChats', (req, res)=>{
+app.get('/GetGroupList', (req, res)=>{
 	res.status(200);
 	db.collection('openChats', function(error, coll) {
 		coll.find({}).toArray(function(err, chats) {
@@ -70,15 +80,13 @@ app.get('/getOpenChats', (req, res)=>{
 	});
 })
 
-//openChats Document format
-	// 1.) Array of IDs of people in chat
-	// 2.) isAvailable boolean, is someone trying to join the chat?
-
 //Person is making a 'Topic'
 //POST Request Endpoint
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
 
+
+// 
 app.get('/getUsers', (req, res)=> {
 	res.status(200);
 	db.collection('users', (err, coll)=>{
@@ -89,6 +97,7 @@ app.get('/getUsers', (req, res)=> {
 		
 	})
 })
+
 //need userID and chat name is req body
 //first check if user is in a chat rn, if they are tell them they cannot
 // app.post('/createChat', (req, res) =>{
@@ -123,31 +132,24 @@ app.get('/getUsers', (req, res)=> {
 //redirect to something???
 
 
-//person trying to join a topic
-//POST Request Endpoint
-//Set Boolean value to False until new user is connected
-app.post('/joinChat', (req, res) =>{
-	
-})
 //Redirect to GET request Send the client a list of all members of current chat
 //will need to have some sort of change stream or the like for the boolean value
-app.get('/available', (req, res) =>{
+app.get('/getGroupMembers', (req, res) =>{
 	
 })
 
 //Post Request Endpoint
 //Once the new user is all connected, adds the new user to the chat members list
 //sets the isAvailable Boolean to True
-app.post('/joined', (req, res) =>{
-	
+app.post('/joinedGroupSuccessfully', (req, res) =>{
+	console.log(req);
+	console.log(req.body);
+	db.collection('openChats', function(err, coll) {
+		coll.find({}).toArray(function(err, users){
+			console.log(users);
+		}) 
+	});
 })
-
-const peerServerOptions = {
-	debug: false,
-}
-const peerServer =  require('peer').ExpressPeerServer(SERVER, peerServerOptions);
-
-app.use('/peerjs', peerServer);
 
 
 peerServer.on('connection', (client) => {
@@ -160,7 +162,7 @@ peerServer.on('connection', (client) => {
 })
 peerServer.on('disconnect', (client) => {
 	console.log('Disconnection from ', client);
-	// Users.deleteOne({userID: client}, function(err, results) {
+	// Users.remove({userID: client}, function(err, results) {
 	// 	console.log('User document removed');
 	// });
 })
