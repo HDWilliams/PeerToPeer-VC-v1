@@ -147,6 +147,8 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	db.collection('openChats', function(err, coll) {
 		coll.find({}).toArray(function(err, users){
 			console.log(users);
+			res.status(200);
+			res.send();
 		}) 
 	});
 })
