@@ -146,9 +146,17 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	const userID = req.body.id;
 	db.collection('openChats', function(err, coll) {
 		coll.findOne({topicName: topicToJoin}, function(err, group){
-			console.log(group);
-			res.status(205);
-			res.send();
+			if (group == null) {
+				// something has gone wrong
+				res.status(404);
+				res.send({errorMsg: "We couldn't find the group you wanted to join"});
+			}
+			else {
+				console.log(group);
+				res.status(200);
+				res.send();
+			}
+		
 		}) 
 	});
 })
