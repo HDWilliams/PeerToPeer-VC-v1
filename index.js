@@ -208,11 +208,15 @@ app.post('/joinedGroupFail', (req, res) => {
 				{ $set: { isAvailable: true
 				}}, 
 				function(err, updatedGroup){
-					console.log(updatedGroup);
 					if (err){
 						res.status(500);
 						res.send({errorMsg: "Database error occurred while joining the group"});
 					}
+					else if (updatedGroup.nModified == 0) {
+						console.log('no documents were found that matched that group');
+						res.status(400);
+						res.send({errorMsg: "No documents matched the requested topic"});
+					} 
 					else {
 						res.status(200);
 						res.send();
