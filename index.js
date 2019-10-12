@@ -142,12 +142,13 @@ app.get('/getGroupMembers', (req, res) =>{
 //Once the new user is all connected, adds the new user to the chat members list
 //sets the isAvailable Boolean to True
 app.post('/joinedGroupSuccessfully', (req, res) =>{
-	console.log(req);
 	console.log(req.body);
+	const topicToJoin = req.body.topic;
+	const userID = req.body.id;
 	db.collection('openChats', function(err, coll) {
-		coll.find({}).toArray(function(err, users){
-			console.log(users);
-			res.status(200);
+		coll.find({topicName: topicToJoin}).toArray(function(err, group){
+			console.log(group);
+			res.status(205);
 			res.send();
 		}) 
 	});
