@@ -143,6 +143,11 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	console.log(req.body);
 	const topicToJoin = req.body.topic;
 	const userID = req.body.id;
+	if (!req.body.topic || !req.body.id) {
+		res.status(400);
+		res.send({errorMsg: "Please provide both a topic name and user ID to utilize this endpoint"});
+	}
+
 	db.collection('openChats', function(err, coll) {
 		coll.findOne({topicName: topicToJoin}, function(err, group){
 			if (err) {
@@ -187,6 +192,11 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 // supposed to make. Since the user hasn't actually joined the group, all we really have 
 // to do is make the group available for other users to join
 app.post('/joinedGroupFail', (req, res) => {
+
+	if (!req.body.topic) {
+		res.status(400);
+		res.send({errorMsg: "Please provide both a topic name to utilize this endpoint"});
+	}
 	const topicToJoin = req.body.topic;
 	db.collection('openChats', function(err, coll) {
 		if (err) {
