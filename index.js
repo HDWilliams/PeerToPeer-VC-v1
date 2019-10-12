@@ -195,7 +195,7 @@ app.post('/joinedGroupFail', (req, res) => {
 
 	if (!req.body.topic) {
 		res.status(400);
-		res.send({errorMsg: "Please provide both a topic name to utilize this endpoint"});
+		res.send({errorMsg: "Please provide a topic name to utilize this endpoint"});
 	}
 	const topicToJoin = req.body.topic;
 	db.collection('openChats', function(err, coll) {
@@ -213,7 +213,7 @@ app.post('/joinedGroupFail', (req, res) => {
 						res.send({errorMsg: "Database error occurred while joining the group"});
 					}
 					else {
-						res.send(200);
+						res.status(200);
 						res.send();
 					}
 				});
