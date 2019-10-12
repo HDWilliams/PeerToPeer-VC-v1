@@ -167,7 +167,7 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 						else {
 							console.log('joining group failed for some mongoDB error');
 							res.status(500);
-							res.send(errorMsg: "Database error occurred while joining the group")
+							res.send({errorMsg: "Database error occurred while joining the group"});
 						}
 						
 
