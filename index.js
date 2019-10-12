@@ -153,7 +153,8 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 			}
 			else {
 				console.log(group);
-				const newMembers = group.members.push(userID);
+				const newMembers = [...group.members, userID];
+				console.log(newMembers);
 				coll.updateOne({topicName: topicToJoin}, 
 					{ $set: { 
 						members: newMembers, 
