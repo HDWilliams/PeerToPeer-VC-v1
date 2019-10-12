@@ -7,7 +7,7 @@ class PeerContainer extends React.Component{
 
         // this.testPeer = this.testPeer.bind(this);
         // this.renderVideo = this.renderVideo.bind(this);
-
+        
         this.state = {
             peer: null,
             peerID: null,
@@ -41,7 +41,7 @@ class PeerContainer extends React.Component{
 
         // get video element 
         if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
-            navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) =>  {
+            navigator.mediaDevices.getUserMedia({video: true, audio: false}).then((stream) =>  {
                 this.videoRef.current.srcObject = stream;
                 // this.setState({videoSrc: stream});
             }).catch((err) =>  {

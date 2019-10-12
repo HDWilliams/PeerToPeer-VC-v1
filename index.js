@@ -91,35 +91,36 @@ app.get('/getUsers', (req, res)=> {
 })
 //need userID and chat name is req body
 //first check if user is in a chat rn, if they are tell them they cannot
-app.post('/createChat', (req, res) =>{
-	res.status(200);
-	let currentChat = null;
-	db.collection('users', function(err, coll){
-		currentChat = coll.find({userID: req.body.userID})
-		return currentChat;
-	})
-	//if True, create chat, if not send error message or redirect perhaps
-	if (currentChat === null){
-		db.collection('openChats', function(error, coll) {
-			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
-				assert.equal(err, null);
-				res.send(`You are now the proud owner of a Topic...${records[0]._id}`);
-				let currentChat = records[0]._id;
-				return currentChat;
-			})
-		db.collection('users', function(err, coll){
-			coll.insert({currentChat: currentChat}, function(err, records){
-				assert.equal(err, null);
-				res.send(`Chat ${currentChat} has been stored in your account info while the chat is open`);
-			})
+// app.post('/createChat', (req, res) =>{
+// 	res.status(200);
+// 	let currentChat = null;
+// 	db.collection('users', function(err, coll){
+// 		currentChat = coll.find({userID: req.body.userID})
+// 		return currentChat;
+// 	})
+// 	//if True, create chat, if not send error message or redirect perhaps
+// 	if (currentChat === null){
+// 		db.collection('openChats', function(error, coll) {
+// 			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
+// 				assert.equal(err, null);
+// 				res.send(`You are now the proud owner of a Topic...${records[0]._id}`);
+// 				let currentChat = records[0]._id;
+// 				return currentChat;
+// 			})
+// 		db.collection('users', function(err, coll){
+// 			coll.insert({currentChat: currentChat}, function(err, records){
+// 				assert.equal(err, null);
+// 				res.send(`Chat ${currentChat} has been stored in your account info while the chat is open`);
+// 			})
 			
-	} else {
-		res.send('You are already in a chat...');
-	}
+// 	} else {
+// 		res.send('You are already in a chat...');
+// 	}
 	
-	})
+// 	})
 
-}) //redirect to something???
+// }) 
+//redirect to something???
 
 
 //person trying to join a topic
