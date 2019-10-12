@@ -14,7 +14,6 @@ const MongoClient = require('mongodb').MongoClient;
 let db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
   console.log('connected to db');
-  console.log(client);
   db = client.db('heroku_xr0pdhrx');
 });
 
@@ -146,7 +145,7 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	const topicToJoin = req.body.topic;
 	const userID = req.body.id;
 	db.collection('openChats', function(err, coll) {
-		coll.find({topicName: topicToJoin}).toArray(function(err, group){
+		coll.findOne({topicName: topicToJoin}, function(err, group){
 			console.log(group);
 			res.status(205);
 			res.send();
