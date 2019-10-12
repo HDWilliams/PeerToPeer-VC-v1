@@ -147,14 +147,31 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	db.collection('openChats', function(err, coll) {
 		coll.findOne({topicName: topicToJoin}, function(err, group){
 			if (group == null) {
-				// something has gone wrong
-				res.status(404);
+				// This is an extremely unlikely scenario, but let's catch it
+				res.status(400);
 				res.send({errorMsg: "We couldn't find the group you wanted to join"});
 			}
 			else {
 				console.log(group);
-				res.status(200);
-				res.send();
+				const newMembers = group.members.push(userID);
+				coll.update({topicName: topicToJoin}, 
+					{ $set: { 
+						members: newMembers, 
+						isAvailable: true 
+					}}, function(err, updatedGroup) {
+						if (!err) {
+							console.log('successfully joined group with no issues!')
+							res.status(200);
+							res.send();
+						}
+						else {
+							console.log('joining group failed for some mongoDB error');
+							res.status(500);
+							res.send(errorMsg: "Database error occurred while joining the group")
+						}
+						
+
+				});
 			}
 		
 		}) 
