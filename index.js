@@ -67,6 +67,16 @@ app.get('/getOpenChats', (req, res)=>{
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
 
+app.get('/getUsers', (req, res)=> {
+	res.status(200);
+	db.collection('users', (err, coll)=>{
+		coll.find({}).toArray(function(err, users){
+			assert.equal(err, null);
+			res.send(users)
+		}) //ASK ROHUN ABOUT THIS PART
+		
+	})
+})
 //need userID and chat name is req body
 //first check if user is in a chat rn, if they are tell them they cannot
 app.post('/createChat', (req, res) =>{
@@ -97,7 +107,8 @@ app.post('/createChat', (req, res) =>{
 	
 	})
 
-})
+}) //redirect to something???
+	
 
 //person trying to join a topic
 //POST Request Endpoint
