@@ -137,7 +137,6 @@ app.get('/getGroupMembers', (req, res) =>{
 	
 })
 
-//Post Request Endpoint
 //Once the new user is all connected, adds the new user to the chat members list
 //sets the isAvailable Boolean to True
 app.post('/joinedGroupSuccessfully', (req, res) =>{
@@ -146,7 +145,11 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	const userID = req.body.id;
 	db.collection('openChats', function(err, coll) {
 		coll.findOne({topicName: topicToJoin}, function(err, group){
-			if (group == null) {
+			if (err) {
+				res.status(500);
+				res.send({errorMsg: "Database error occurred while joining the group"});				
+			}
+			else if (group == null) {
 				// This is an extremely unlikely scenario, but let's catch it
 				res.status(400);
 				res.send({errorMsg: "We couldn't find the group you wanted to join"});
@@ -155,13 +158,15 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 				console.log(group);
 				const newMembers = [...group.members, userID];
 				console.log(newMembers);
+				// set the new group to include this client and then reset the availability boolean 
+				// of the group 
 				coll.updateOne({topicName: topicToJoin}, 
 					{ $set: { 
 						members: newMembers, 
 						isAvailable: true 
-					}}, function(err, updatedGroup) {
+					}}, 
+					function(err, updatedGroup) {
 						if (!err) {
-							console.log(updatedGroup);
 							console.log('successfully joined group with no issues!')
 							res.status(200);
 							res.send();
@@ -171,12 +176,38 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 							res.status(500);
 							res.send({errorMsg: "Database error occurred while joining the group"});
 						}
-						
-
 				});
 			}
 		
 		}) 
+	});
+})
+
+// This is called when the user has failed to make all of the calls that they are 
+// supposed to make. Since the user hasn't actually joined the group, all we really have 
+// to do is make the group available for other users to join
+app.post('/joinedGroupFail', (req, res) => {
+	const topicToJoin = req.body.topic;
+	db.collection('openChats', function(err, coll) {
+		if (err) {
+			res.status(500);
+			res.send({errorMsg: "Database error occurred while joining the group"});
+		}
+		else {
+			coll.updateOne({topicName: topicToJoin}, 
+				{ $set: { isAvailable: true
+				}}, 
+				function(err, updatedGroup){
+					if (err){
+						res.status(500);
+						res.send({errorMsg: "Database error occurred while joining the group"});
+					}
+					else {
+						res.send(200);
+						res.send();
+					}
+				});
+		}
 	});
 })
 
