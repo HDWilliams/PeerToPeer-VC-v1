@@ -79,6 +79,15 @@ app.get('/GetGroupList', (req, res)=>{
 	});
 })
 
+// When the client makes a call to this endpoint, we will assume that they are attempting to 
+// join an exising call, and we will treat it as such.
+// This extension, when called, will lock the group such that new members cannot join UNTIL
+// the client makes a call to either 'joinGroupSuccessfully' or 'joinGroupFail', which will
+// indicate to the server the success of their call 
+app.get('/getGroupMembers', (req, res) =>{
+	
+})
+
 //Person is making a 'Topic'
 //POST Request Endpoint
 //Creates a document in openChats on Mongo
@@ -92,13 +101,22 @@ app.get('/getUsers', (req, res)=> {
 		coll.find({}).toArray(function(err, users){
 			assert.equal(err, null);
 			res.send(users)
-		}) //ASK ROHUN ABOUT THIS PART
+		}) //ASK ROHUN ABOUT THIS PARTzx
 		
 	})
 })
 
 //need userID and chat name is req body
 //first check if user is in a chat rn, if they are tell them they cannot
+app.post('/createGroup', (req, res) => {
+ // check if the client sent the proper data 
+
+ // open the chats collection 
+ // 	check if the chat name already exists. if it does, return error
+ //		if it doesn't exist, then create it and add the client ID to that group
+
+})
+
 // app.post('/createChat', (req, res) =>{
 // 	res.status(200);
 // 	let currentChat = null;
@@ -130,12 +148,6 @@ app.get('/getUsers', (req, res)=> {
 // }) 
 //redirect to something???
 
-
-//Redirect to GET request Send the client a list of all members of current chat
-//will need to have some sort of change stream or the like for the boolean value
-app.get('/getGroupMembers', (req, res) =>{
-	
-})
 
 //Once the new user is all connected, adds the new user to the chat members list
 //sets the isAvailable Boolean to True
@@ -218,6 +230,7 @@ app.post('/joinedGroupFail', (req, res) => {
 						res.send({errorMsg: "No documents matched the requested topic"});
 					} 
 					else {
+						console.log('Successfully made group available to be joined');
 						res.status(200);
 						res.send();
 					}
