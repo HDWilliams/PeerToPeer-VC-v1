@@ -91,7 +91,6 @@ app.get('/getGroupMembers', (req, res) =>{
 
 //retreive all active users 
 app.get('/getUsers', (req, res)=> {
-	res.status(200);
 	db.collection('users', (err, coll)=>{
 		coll.find({}).toArray(function(err, users){
 			if (err){
@@ -99,7 +98,7 @@ app.get('/getUsers', (req, res)=> {
 				res.send({errorMsg: 'Error in retreiving user data'});
 			} else{
 				res.status(200);
-				res.send({activeUsers: users.map((user)=>{user.name})});
+				res.send({activeUsers: users.map((user)=>user.name)});
 			}
 			
 		})
@@ -116,14 +115,18 @@ app.post('/createChat', (req, res) =>{
 		res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
 	}
 	db.collection('openChats', function(error, coll) {
-			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
+			coll.insert(
+				{topicName:req.body.name, 
+				members:[req.body.userID], 
+				isAvailable: True}, 
+				function(err, records){
 				if (err){
 					res.status(500);
 					res.send({errorMsg: "Error on database insert operation while creating a chat"})
 				} else{
 					res.status(200);
-					console.log(`Created new topic ${records[0]._id}`)
-					res.send()
+					console.log("Created new topic", records[0]._id});
+					res.send();
 				}
 				
 			})
