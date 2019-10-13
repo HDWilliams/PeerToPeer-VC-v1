@@ -89,64 +89,46 @@ app.get('/getGroupMembers', (req, res) =>{
 })
 
 
-// 
+//retreive all active users 
 app.get('/getUsers', (req, res)=> {
 	res.status(200);
 	db.collection('users', (err, coll)=>{
 		coll.find({}).toArray(function(err, users){
-			assert.equal(err, null);
-			res.send(users)
-		}) //ASK ROHUN ABOUT THIS PARTzx
+			if (err){
+				res.status(500);
+				res.send({errorMsg: 'Error in retreiving user data'});
+			} else{
+				res.status(200);
+				res.send({activeUsers: users.map((user)=>{user.name})});
+			}
+			
+		})
 		
 	})
 })
 
 //Person is making a 'Topic'
-//POST Request Endpoint
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
-
-
-//need userID and chat name is req body
-//first check if user is in a chat rn, if they are tell them they cannot
-app.post('/createGroup', (req, res) => {
- // check if the client sent the proper data 
-
- // open the chats collection 
- // 	check if the chat name already exists. if it does, return error
- //		if it doesn't exist, then create it and add the client ID to that group
-
-})
-
-// app.post('/createChat', (req, res) =>{
-// 	res.status(200);
-// 	let currentChat = null;
-// 	db.collection('users', function(err, coll){
-// 		currentChat = coll.find({userID: req.body.userID})
-// 		return currentChat;
-// 	})
-// 	//if True, create chat, if not send error message or redirect perhaps
-// 	if (currentChat === null){
-// 		db.collection('openChats', function(error, coll) {
-// 			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
-// 				assert.equal(err, null);
-// 				res.send(`You are now the proud owner of a Topic...${records[0]._id}`);
-// 				let currentChat = records[0]._id;
-// 				return currentChat;
-// 			})
-// 		db.collection('users', function(err, coll){
-// 			coll.insert({currentChat: currentChat}, function(err, records){
-// 				assert.equal(err, null);
-// 				res.send(`Chat ${currentChat} has been stored in your account info while the chat is open`);
-// 			})
-			
-// 	} else {
-// 		res.send('You are already in a chat...');
-// 	}
-	
-// 	})
-
-// }) 
+app.post('/createChat', (req, res) =>{
+	if (!req.body.userID || !req.body.name){
+		res.status(400);
+		res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
+	}
+	db.collection('openChats', function(error, coll) {
+			coll.insert({chatName:req.body.name, members:[req.body.userID]}, function(err, records){
+				if (err){
+					res.status(500);
+					res.send({errorMsg: "Error on database insert operation while creating a chat"})
+				} else{
+					res.status(200);
+					console.log(`Created new topic ${records[0]._id}`)
+					res.send()
+				}
+				
+			})
+	})	
+}) 
 //redirect to something???
 
 
