@@ -65,7 +65,7 @@ app.use('/peerjs', peerServer);
 //initial placeholder route
 app.get('/', (req, res)=>{
 	res.status(200);
-	res.send("This is a placeholder!");
+	return res.send("This is a placeholder!");
 })
 
 //return a list of all open chats in the db. Needs to be set up with routing before use
@@ -74,7 +74,7 @@ app.get('/GetGroupList', (req, res)=>{
 	db.collection('openChats', function(error, coll) {
 		coll.find({}).toArray(function(err, chats) {
 			assert.equal(err, null);
-			res.send(chats);
+			return res.send(chats);
 		})
 	});
 })
@@ -95,10 +95,11 @@ app.get('/getUsers', (req, res)=> {
 		coll.find({}).toArray(function(err, users){
 			if (err){
 				res.status(500);
-				res.send({errorMsg: 'Error in retreiving user data'});
-			} else{
+				return res.send({errorMsg: 'Error in retreiving user data'});
+			} 
+			else{
 				res.status(200);
-				res.send({activeUsers: users.map((user)=>user.name)});
+				return res.send({activeUsers: users.map((user)=>user.name)});
 			}
 			
 		})
@@ -144,19 +145,19 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 	const userID = req.body.id;
 	if (!req.body.topic || !req.body.id) {
 		res.status(400);
-		res.send({errorMsg: "Please provide both a topic name and user ID to utilize this endpoint"});
+		return res.send({errorMsg: "Please provide both a topic name and user ID to utilize this endpoint"});
 	}
 
 	db.collection('openChats', function(err, coll) {
 		coll.findOne({topicName: topicToJoin}, function(err, group){
 			if (err) {
 				res.status(500);
-				res.send({errorMsg: "Database error occurred while joining the group"});				
+				return res.send({errorMsg: "Database error occurred while joining the group"});				
 			}
 			else if (group == null) {
 				// This is an extremely unlikely scenario, but let's catch it
 				res.status(400);
-				res.send({errorMsg: "We couldn't find the group you wanted to join"});
+				return res.send({errorMsg: "We couldn't find the group you wanted to join"});
 			}
 			else {
 				console.log(group);
@@ -173,12 +174,12 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 						if (!err) {
 							console.log('successfully joined group with no issues!')
 							res.status(200);
-							res.send();
+							return res.send();
 						}
 						else {
 							console.log('joining group failed for some mongoDB error');
 							res.status(500);
-							res.send({errorMsg: "Database error occurred while joining the group"});
+							return res.send({errorMsg: "Database error occurred while joining the group"});
 						}
 				});
 			}
@@ -194,13 +195,13 @@ app.post('/joinedGroupFail', (req, res) => {
 
 	if (!req.body.topic) {
 		res.status(400);
-		res.send({errorMsg: "Please provide a topic name to utilize this endpoint"});
+		return res.send({errorMsg: "Please provide a topic name to utilize this endpoint"});
 	}
 	const topicToJoin = req.body.topic;
 	db.collection('openChats', function(err, coll) {
 		if (err) {
 			res.status(500);
-			res.send({errorMsg: "Database error occurred while joining the group"});
+			return res.send({errorMsg: "Database error occurred while joining the group"});
 		}
 		else {
 			coll.updateOne({topicName: topicToJoin}, 
@@ -209,17 +210,17 @@ app.post('/joinedGroupFail', (req, res) => {
 				function(err, updatedGroup){
 					if (err){
 						res.status(500);
-						res.send({errorMsg: "Database error occurred while joining the group"});
+						return res.send({errorMsg: "Database error occurred while joining the group"});
 					}
 					else if (updatedGroup.result.n == 0) {
 						console.log('no documents were found that matched that group');
 						res.status(400);
-						res.send({errorMsg: "No documents matched the requested topic"});
+						return res.send({errorMsg: "No documents matched the requested topic"});
 					} 
 					else {
 						console.log('Successfully made group available to be joined');
 						res.status(200);
-						res.send();
+						return res.send();
 					}
 				});
 		}
