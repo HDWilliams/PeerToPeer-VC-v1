@@ -88,11 +88,6 @@ app.get('/getGroupMembers', (req, res) =>{
 	
 })
 
-//Person is making a 'Topic'
-//POST Request Endpoint
-//Creates a document in openChats on Mongo
-//Adds the creator in to list of participants
-
 
 // 
 app.get('/getUsers', (req, res)=> {
@@ -105,6 +100,12 @@ app.get('/getUsers', (req, res)=> {
 		
 	})
 })
+
+//Person is making a 'Topic'
+//POST Request Endpoint
+//Creates a document in openChats on Mongo
+//Adds the creator in to list of participants
+
 
 //need userID and chat name is req body
 //first check if user is in a chat rn, if they are tell them they cannot
