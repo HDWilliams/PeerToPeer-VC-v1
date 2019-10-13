@@ -113,24 +113,25 @@ app.post('/createChat', (req, res) =>{
 	if (!req.body.userID || !req.body.name){
 		res.status(400);
 		res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
-	}
-	db.collection('openChats', function(error, coll) {
-			coll.insert(
-				{topicName:req.body.name, 
-				members:[req.body.userID], 
-				isAvailable: true}, 
-				function(err, records){
-				if (err){
-					res.status(500);
-					res.send({errorMsg: "Error on database insert operation while creating a chat"})
-				} else{
-					res.status(200);
-					console.log("Created new topic", records);
-					res.send();
-				}
-				
-			})
-	})	
+	} else{
+		db.collection('openChats', function(error, coll) {
+				coll.insert(
+					{topicName:req.body.name, 
+					members:[req.body.userID], 
+					isAvailable: true}, 
+					function(err, records){
+					if (err){
+						res.status(500);
+						res.send({errorMsg: "Error on database insert operation while creating a chat"})
+					} else{
+						res.status(200);
+						console.log("Created new topic", records);
+						res.send();
+					}
+					
+				})
+		})
+	}	
 }) 
 //redirect to something???
 
