@@ -112,7 +112,7 @@ app.get('/getUsers', (req, res)=> {
 app.post('/createChat', (req, res) =>{
 	if (!req.body.userID || !req.body.name){
 		res.status(400);
-		res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
+		return res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
 	} else{
 		db.collection('openChats', function(error, coll) {
 				coll.insert(
@@ -122,11 +122,11 @@ app.post('/createChat', (req, res) =>{
 					function(err, records){
 					if (err){
 						res.status(500);
-						res.send({errorMsg: "Error on database insert operation while creating a chat"})
+						return res.send({errorMsg: "Error on database insert operation while creating a chat"})
 					} else{
 						res.status(200);
 						console.log("Created new topic", records);
-						res.send();
+						return res.send();
 					}
 					
 				})
