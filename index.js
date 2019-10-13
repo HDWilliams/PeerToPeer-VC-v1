@@ -125,7 +125,7 @@ app.post('/createChat', (req, res) =>{
 					res.send({errorMsg: "Error on database insert operation while creating a chat"})
 				} else{
 					res.status(200);
-					console.log("Created new topic", records[0]._id});
+					console.log("Created new topic", records[0]._id);
 					res.send();
 				}
 				
