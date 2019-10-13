@@ -118,7 +118,7 @@ app.post('/createChat', (req, res) =>{
 			coll.insert(
 				{topicName:req.body.name, 
 				members:[req.body.userID], 
-				isAvailable: True}, 
+				isAvailable: true}, 
 				function(err, records){
 				if (err){
 					res.status(500);
