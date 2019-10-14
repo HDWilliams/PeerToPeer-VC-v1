@@ -85,7 +85,8 @@ app.get('/GetGroupList', (req, res)=>{
 // the client makes a call to either 'joinGroupSuccessfully' or 'joinGroupFail', which will
 // indicate to the server the success of their call
 app.get('/getGroupMembers', (req, res) =>{
-	if (!req.body.groupName){
+	groupName = req.body.groupName
+	if (!groupName){
 		res.status(400);
 		return res.send({errorMsg: 'Client error, this request must contain a group name'})
 	}
@@ -95,7 +96,7 @@ app.get('/getGroupMembers', (req, res) =>{
 			res.status(500);
 			return res.send({errorMsg: "Database error"});
 		}
-		
+
 		coll.updateOne({topicName: groupName},
 			{ $set: {
 				isAvailable: false
