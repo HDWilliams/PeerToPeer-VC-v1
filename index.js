@@ -97,14 +97,17 @@ app.get('/getGroupMembers', (req, res) =>{
 			return res.send({errorMsg: "Database error"});
 		}
 
-		coll.findOne({topicName: groupName},
+		coll.findOneAndUpdate({topicName: groupName},
+			{ $set: {
+				isAvailable: false
+			}},
 			function(err, group) {
 				if (err) {
 					res.status(500);
 					return res.send({errorMsg: "Database error occurred while accessing the group"});
 				}
 
-				console.log('Group found! Successfully found group')
+				console.log('Group found! Successfully locked group')
 				console.log(group)
 				res.status(200);
 				return res.send({groupMembers: "Hi"});
