@@ -50,6 +50,7 @@ Thumbs.db
 *.der
 *.key
 *.pem
+*.lock
 
 # -------------------------
 # BEGIN Whitelisted Files
