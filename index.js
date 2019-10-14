@@ -108,6 +108,7 @@ app.get('/getGroupMembers', (req, res) =>{
 				}
 
 				console.log('Group found! Successfully locked group')
+				console.log(group.members)
 				res.status(200);
 				return res.send({groupMembers: "Hi"});
 			})
