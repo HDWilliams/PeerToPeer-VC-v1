@@ -90,19 +90,26 @@ app.get('/getGroupMembers', (req, res) =>{
 		return res.send({errorMsg: 'Client error, this request must contain a group name'})
 	}
 
-	coll.updateOne({topicName: groupName},
-		{ $set: {
-			isAvailable: false
-		}},
-		function(err, group) {
-			if (err) {
-				res.status(500);
-				return res.send({errorMsg: "Database error occurred while accessing the group"});
-			}
+	db.collection('openChats', function(err, coll) {
+		if (err) {
+			res.status(500);
+			return res.send({errorMsg: "Database error"});
+		}
+		
+		coll.updateOne({topicName: groupName},
+			{ $set: {
+				isAvailable: false
+			}},
+			function(err, group) {
+				if (err) {
+					res.status(500);
+					return res.send({errorMsg: "Database error occurred while accessing the group"});
+				}
 
-			console.log('Group found! Successfully locked group')
-			res.status(200);
-			return res.send({groupMembers: group.members});
+				console.log('Group found! Successfully locked group')
+				res.status(200);
+				return res.send({groupMembers: group.members});
+			})
 		})
 })
 
