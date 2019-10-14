@@ -34,9 +34,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-const SERVER = app.listen(PORT, ()=> console.log(`I'm listening on port ${PORT}`));
+const SERVER = app.listen(PORT, ()=> console.log("I'm listening on port ${PORT}"));
 
-// PEER SERVER SETUP 
+// PEER SERVER SETUP
 const peerServerOptions = {
 	debug: false,
 }
@@ -46,12 +46,12 @@ app.use('/peerjs', peerServer);
 
 
 // MongoDB Collections and Formmating
-// openChats: A collection that contains all of the active chat groups 
+// openChats: A collection that contains all of the active chat groups
 // Example document for 'openChats'
 //  {
-// 	members: ['id1', 'id2', 'id3'], // list of ids of the users 
-// 	isAvailable: false // determines if the group can be joined 
-// 	topic: 'Dolphin Health' // the chat topic in basic string format 
+// 	members: ['id1', 'id2', 'id3'], // list of ids of the users
+// 	isAvailable: false // determines if the group can be joined
+// 	topic: 'Dolphin Health' // the chat topic in basic string format
 // }
 
 
@@ -60,7 +60,7 @@ app.use('/peerjs', peerServer);
 //   res.setHeader('Content-Type', 'text/plain')
 //   res.write('you posted:\n')
 //   res.end(JSON.stringify(req.body, null, 2))
-  
+
 
 //initial placeholder route
 app.get('/', (req, res)=>{
@@ -79,31 +79,49 @@ app.get('/GetGroupList', (req, res)=>{
 	});
 })
 
-// When the client makes a call to this endpoint, we will assume that they are attempting to 
+// When the client makes a call to this endpoint, we will assume that they are attempting to
 // join an exising call, and we will treat it as such.
 // This extension, when called, will lock the group such that new members cannot join UNTIL
 // the client makes a call to either 'joinGroupSuccessfully' or 'joinGroupFail', which will
-// indicate to the server the success of their call 
+// indicate to the server the success of their call
 app.get('/getGroupMembers', (req, res) =>{
-	
+	if (!req.body.groupName){
+		res.status(400);
+		return res.send({errorMsg: 'Client error, this request must contain a group name'})
+	}
+
+	coll.updateOne({topicName: groupName},
+		{ $set: {
+			isAvailable: false
+		}},
+		function(err, group) {
+			if (err) {
+				res.status(500);
+				return res.send({errorMsg: "Database error occurred while accessing the group"});
+			}
+
+			console.log('Group found! Successfully locked group')
+			res.status(200);
+			return res.send({groupMembers: group.members});
+		)}
 })
 
 
-//retreive all active users 
+//retreive all active users
 app.get('/getUsers', (req, res)=> {
 	db.collection('users', (err, coll)=>{
 		coll.find({}).toArray(function(err, users){
 			if (err){
 				res.status(500);
 				return res.send({errorMsg: 'Error in retreiving user data'});
-			} 
+			}
 			else{
 				res.status(200);
 				return res.send({activeUsers: users.map((user)=>user.name)});
 			}
-			
+
 		})
-		
+
 	})
 })
 
@@ -117,9 +135,9 @@ app.post('/createChat', (req, res) =>{
 	} else{
 		db.collection('openChats', function(error, coll) {
 				coll.insert(
-					{topicName:req.body.name, 
-					members:[req.body.userID], 
-					isAvailable: true}, 
+					{topicName:req.body.name,
+					members:[req.body.userID],
+					isAvailable: true},
 					function(err, records){
 					if (err){
 						res.status(500);
@@ -129,11 +147,11 @@ app.post('/createChat', (req, res) =>{
 						console.log("Created new topic", records);
 						return res.send();
 					}
-					
+
 				})
 		})
-	}	
-}) 
+	}
+})
 //redirect to something???
 
 
@@ -152,7 +170,7 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 		coll.findOne({topicName: topicToJoin}, function(err, group){
 			if (err) {
 				res.status(500);
-				return res.send({errorMsg: "Database error occurred while joining the group"});				
+				return res.send({errorMsg: "Database error occurred while joining the group"});
 			}
 			else if (group == null) {
 				// This is an extremely unlikely scenario, but let's catch it
@@ -163,13 +181,13 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 				console.log(group);
 				const newMembers = [...group.members, userID];
 				console.log(newMembers);
-				// set the new group to include this client and then reset the availability boolean 
-				// of the group 
-				coll.updateOne({topicName: topicToJoin}, 
-					{ $set: { 
-						members: newMembers, 
-						isAvailable: true 
-					}}, 
+				// set the new group to include this client and then reset the availability boolean
+				// of the group
+				coll.updateOne({topicName: topicToJoin},
+					{ $set: {
+						members: newMembers,
+						isAvailable: true
+					}},
 					function(err, updatedGroup) {
 						if (!err) {
 							console.log('successfully joined group with no issues!')
@@ -183,13 +201,13 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 						}
 				});
 			}
-		
-		}) 
+
+		})
 	});
 })
 
-// This is called when the user has failed to make all of the calls that they are 
-// supposed to make. Since the user hasn't actually joined the group, all we really have 
+// This is called when the user has failed to make all of the calls that they are
+// supposed to make. Since the user hasn't actually joined the group, all we really have
 // to do is make the group available for other users to join
 app.post('/joinedGroupFail', (req, res) => {
 
@@ -204,9 +222,9 @@ app.post('/joinedGroupFail', (req, res) => {
 			return res.send({errorMsg: "Database error occurred while joining the group"});
 		}
 		else {
-			coll.updateOne({topicName: topicToJoin}, 
+			coll.updateOne({topicName: topicToJoin},
 				{ $set: { isAvailable: true
-				}}, 
+				}},
 				function(err, updatedGroup){
 					if (err){
 						res.status(500);
@@ -216,7 +234,7 @@ app.post('/joinedGroupFail', (req, res) => {
 						console.log('no documents were found that matched that group');
 						res.status(400);
 						return res.send({errorMsg: "No documents matched the requested topic"});
-					} 
+					}
 					else {
 						console.log('Successfully made group available to be joined');
 						res.status(200);
