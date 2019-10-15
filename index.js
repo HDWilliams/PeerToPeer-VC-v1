@@ -88,7 +88,7 @@ app.get('/getTopicMembers', (req, res) =>{
 	topicName = req.body.topicName
 	if (!topicName){
 		res.status(400);
-		return res.send({errorMsg: 'Client error, this request must contain a topic name'})
+		return res.send({errorMsg: "Client error, this request must contain a topic name"})
 	}
 
 	db.collection('openChats', function(err, coll) {
