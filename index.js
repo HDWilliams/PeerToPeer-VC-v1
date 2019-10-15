@@ -143,21 +143,30 @@ app.post('/createChat', (req, res) =>{
 		return res.send({errorMsg: 'Client error, this request must contain a topic name and relevant userID'})
 	} else{
 		db.collection('openChats', function(error, coll) {
-				coll.insert(
-					{topicName:req.body.name,
-					members:[req.body.userID],
-					isAvailable: true},
+			coll.findOne({topicName: req.body.name},function(err, doc){
+				if (err){
+					res.status(500);
+					return res.send({errorMsg: "Error on database insert operation while creating a chat"})
+				} else if(doc){  
+					res.status(400);
+					return res.send({errorMsg: 'Please choose a unique Topic name'});
+				} else{
+					coll.insert(
+						{topicName:req.body.name,
+						members:[req.body.userID],
+						isAvailable: true},
 					function(err, records){
-					if (err){
-						res.status(500);
-						return res.send({errorMsg: "Error on database insert operation while creating a chat"})
-					} else{
-						res.status(200);
-						console.log("Created new topic", records);
-						return res.send();
-					}
-
-				})
+						if (err){
+							res.status(500);
+							return res.send({errorMsg: 'Server error while creating new Topic...'});
+						} else{
+							res.status(200);
+							console.log("Created new topic", records);
+							return res.send();
+						}
+					})
+				}
+			})
 		})
 	}
 })
