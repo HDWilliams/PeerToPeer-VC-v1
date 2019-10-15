@@ -46,11 +46,11 @@ app.use('/peerjs', peerServer);
 
 
 // MongoDB Collections and Formmating
-// openChats: A collection that contains all of the active chat groups
+// openChats: A collection that contains all of the active chat topic
 // Example document for 'openChats'
 //  {
 // 	members: ['id1', 'id2', 'id3'], // list of ids of the users
-// 	isAvailable: false // determines if the group can be joined
+// 	isAvailable: false // determines if the topic can be joined
 // 	topic: 'Dolphin Health' // the chat topic in basic string format
 // }
 
@@ -69,7 +69,7 @@ app.get('/', (req, res)=>{
 })
 
 //return a list of all open chats in the db. Needs to be set up with routing before use
-app.get('/GetGroupList', (req, res)=>{
+app.get('/GetTopicList', (req, res)=>{
 	res.status(200);
 	db.collection('openChats', function(error, coll) {
 		coll.find({}).toArray(function(err, chats) {
@@ -81,14 +81,14 @@ app.get('/GetGroupList', (req, res)=>{
 
 // When the client makes a call to this endpoint, we will assume that they are attempting to
 // join an exising call, and we will treat it as such.
-// This extension, when called, will lock the group such that new members cannot join UNTIL
-// the client makes a call to either 'joinGroupSuccessfully' or 'joinGroupFail', which will
+// This extension, when called, will lock the topic such that new members cannot join UNTIL
+// the client makes a call to either 'joinTopicSuccessfully' or 'joinTopicFail', which will
 // indicate to the server the success of their call
-app.get('/getGroupMembers', (req, res) =>{
-	groupName = req.body.groupName
-	if (!groupName){
+app.get('/getTopicMembers', (req, res) =>{
+	topicName = req.body.topicName
+	if (!topicName){
 		res.status(400);
-		return res.send({errorMsg: 'Client error, this request must contain a group name'})
+		return res.send({errorMsg: 'Client error, this request must contain a topic name'})
 	}
 
 	db.collection('openChats', function(err, coll) {
@@ -97,20 +97,20 @@ app.get('/getGroupMembers', (req, res) =>{
 			return res.send({errorMsg: "Database error"});
 		}
 
-		coll.findOneAndUpdate({topicName: groupName},
+		coll.findOneAndUpdate({topicName: topicName},
 			{ $set: {
 				isAvailable: false
 			}},
-			function(err, group) {
+			function(err, topic) {
 				if (err) {
 					res.status(500);
-					return res.send({errorMsg: "Database error occurred while accessing the group"});
+					return res.send({errorMsg: "Database error occurred while accessing the topic"});
 				}
 
-				console.log('Group found! Successfully locked group')
-				console.log(group.value.members)
+				console.log('Topic found! Successfully locked topic')
+				console.log(topic.value.members)
 				res.status(200);
-				return res.send({groupMembers: group.value.members});
+				return res.send({topicMembers: topic.value.members});
 			})
 		})
 })
@@ -140,7 +140,7 @@ app.get('/getUsers', (req, res)=> {
 app.post('/createChat', (req, res) =>{
 	if (!req.body.userID || !req.body.name){
 		res.status(400);
-		return res.send({errorMsg: 'Client error, this request must contain a group name and relevant userID'})
+		return res.send({errorMsg: 'Client error, this request must contain a topic name and relevant userID'})
 	} else{
 		db.collection('openChats', function(error, coll) {
 				coll.insert(
@@ -166,47 +166,47 @@ app.post('/createChat', (req, res) =>{
 
 //Once the new user is all connected, adds the new user to the chat members list
 //sets the isAvailable Boolean to True
-app.post('/joinedGroupSuccessfully', (req, res) =>{
+app.post('/joinedTopicSuccessfully', (req, res) =>{
 	console.log(req.body);
 	const topicToJoin = req.body.topic;
-	const userID = req.body.id;
-	if (!req.body.topic || !req.body.id) {
+	const userID = req.body.userId;
+	if (!req.body.topic || !req.body.UserId) {
 		res.status(400);
-		return res.send({errorMsg: "Please provide both a topic name and user ID to utilize this endpoint"});
+		return res.send({errorMsg: "Please provide both a topic name and userID to utilize this endpoint"});
 	}
 
 	db.collection('openChats', function(err, coll) {
-		coll.findOne({topicName: topicToJoin}, function(err, group){
+		coll.findOne({topicName: topicToJoin}, function(err, topic){
 			if (err) {
 				res.status(500);
-				return res.send({errorMsg: "Database error occurred while joining the group"});
+				return res.send({errorMsg: "Database error occurred while joining the topic"});
 			}
-			else if (group == null) {
+			else if (topic == null) {
 				// This is an extremely unlikely scenario, but let's catch it
 				res.status(400);
-				return res.send({errorMsg: "We couldn't find the group you wanted to join"});
+				return res.send({errorMsg: "We couldn't find the topic you wanted to join"});
 			}
 			else {
-				console.log(group);
-				const newMembers = [...group.members, userID];
+				console.log(topic);
+				const newMembers = [...topic.members, userID];
 				console.log(newMembers);
-				// set the new group to include this client and then reset the availability boolean
-				// of the group
+				// set the new topic to include this client and then reset the availability boolean
+				// of the topic
 				coll.updateOne({topicName: topicToJoin},
 					{ $set: {
 						members: newMembers,
 						isAvailable: true
 					}},
-					function(err, updatedGroup) {
+					function(err, updatedTopic) {
 						if (!err) {
-							console.log('successfully joined group with no issues!')
+							console.log('successfully joined topic with no issues!')
 							res.status(200);
 							return res.send();
 						}
 						else {
-							console.log('joining group failed for some mongoDB error');
+							console.log('joining topic failed for some mongoDB error');
 							res.status(500);
-							return res.send({errorMsg: "Database error occurred while joining the group"});
+							return res.send({errorMsg: "Database error occurred while joining the topic"});
 						}
 				});
 			}
@@ -216,9 +216,9 @@ app.post('/joinedGroupSuccessfully', (req, res) =>{
 })
 
 // This is called when the user has failed to make all of the calls that they are
-// supposed to make. Since the user hasn't actually joined the group, all we really have
-// to do is make the group available for other users to join
-app.post('/joinedGroupFail', (req, res) => {
+// supposed to make. Since the user hasn't actually joined the topic, all we really have
+// to do is make the topic available for other users to join
+app.post('/joinedTopicFail', (req, res) => {
 
 	if (!req.body.topic) {
 		res.status(400);
@@ -228,24 +228,24 @@ app.post('/joinedGroupFail', (req, res) => {
 	db.collection('openChats', function(err, coll) {
 		if (err) {
 			res.status(500);
-			return res.send({errorMsg: "Database error occurred while joining the group"});
+			return res.send({errorMsg: "Database error occurred while joining the topic"});
 		}
 		else {
 			coll.updateOne({topicName: topicToJoin},
 				{ $set: { isAvailable: true
 				}},
-				function(err, updatedGroup){
+				function(err, updatedTopic){
 					if (err){
 						res.status(500);
-						return res.send({errorMsg: "Database error occurred while joining the group"});
+						return res.send({errorMsg: "Database error occurred while joining the topic"});
 					}
-					else if (updatedGroup.result.n == 0) {
-						console.log('no documents were found that matched that group');
+					else if (updatedTopic.result.n == 0) {
+						console.log('no documents were found that matched that topic');
 						res.status(400);
 						return res.send({errorMsg: "No documents matched the requested topic"});
 					}
 					else {
-						console.log('Successfully made group available to be joined');
+						console.log('Successfully made topic available to be joined');
 						res.status(200);
 						return res.send();
 					}
