@@ -140,6 +140,7 @@ app.get('/getUsers', (req, res)=> {
 })
 
 
+
 //Person is making a 'Topic'
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
