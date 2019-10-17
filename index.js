@@ -85,11 +85,11 @@ app.get('/GetTopicList', (req, res)=>{
 // the client makes a call to either 'joinTopicSuccessfully' or 'joinTopicFail', which will
 // indicate to the server the success of their call
 app.get('/getTopicMembers', (req, res) =>{
-	topicName = req.body.topicName
-	if (!topicName){
+	if (!req.body.topicName){
 		res.status(400);
 		return res.send({errorMsg: "Client error, this request must contain a topic name"})
 	}
+	const topicName = req.body.topicName
 
 	db.collection('openChats', function(err, coll) {
 		if (err) {
@@ -106,9 +106,8 @@ app.get('/getTopicMembers', (req, res) =>{
 					res.status(500);
 					return res.send({errorMsg: "Database error occurred while accessing the topic"});
 				}
-
 				console.log('Topic found! Successfully locked topic')
-				console.log(topic.value.members)
+				console.log(topic)
 				res.status(200);
 				return res.send({topicMembers: topic.value.members});
 			})
