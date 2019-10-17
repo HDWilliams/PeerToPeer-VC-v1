@@ -106,10 +106,16 @@ app.get('/getTopicMembers', (req, res) =>{
 					res.status(500);
 					return res.send({errorMsg: "Database error occurred while accessing the topic"});
 				}
-				console.log('Topic found! Successfully locked topic')
-				console.log(topic)
-				res.status(200);
-				return res.send({topicMembers: topic.value.members});
+				else if (topic.value == null) {
+					res.status(400);
+					return res.send({errorMsg: "Could not find a group with that topic!"});
+				}
+				else {
+					console.log('Topic found! Successfully locked topic')
+					console.log(topic.value.members);
+					res.status(200);
+					return res.send({topicMembers: topic.value.members});
+				}
 			})
 		})
 })
