@@ -85,11 +85,11 @@ app.get('/GetTopicList', (req, res)=>{
 // the client makes a call to either 'joinTopicSuccessfully' or 'joinTopicFail', which will
 // indicate to the server the success of their call
 app.get('/getTopicMembers', (req, res) =>{
-	if (!req.body.topicName){
+	if (!req.body.topic){
 		res.status(400);
 		return res.send({errorMsg: "Client error, this request must contain a topic name"})
 	}
-	const topicName = req.body.topicName
+	const topicName = req.body.topic
 
 	db.collection('openChats', function(err, coll) {
 		if (err) {
@@ -145,12 +145,12 @@ app.get('/getUsers', (req, res)=> {
 //Creates a document in openChats on Mongo
 //Adds the creator in to list of participants
 app.post('/createChat', (req, res) =>{
-	if (!req.body.userID || !req.body.name){
+	if (!req.body.userID || !req.body.topic){
 		res.status(400);
 		return res.send({errorMsg: 'Client error, this request must contain a topic name and relevant userID'})
 	} else{
 		db.collection('openChats', function(error, coll) {
-			coll.findOne({topicName: req.body.name},function(err, doc){
+			coll.findOne({topicName: req.body.topic},function(err, doc){
 				if (err){
 					res.status(500);
 					return res.send({errorMsg: "Error on database insert operation while creating a chat"})
@@ -159,7 +159,7 @@ app.post('/createChat', (req, res) =>{
 					return res.send({errorMsg: 'Please choose a unique Topic name'});
 				} else{
 					coll.insert(
-						{topicName:req.body.name,
+						{topicName:req.body.topic,
 						members:[req.body.userID],
 						isAvailable: true},
 					function(err, records){
@@ -185,8 +185,8 @@ app.post('/createChat', (req, res) =>{
 app.post('/joinedTopicSuccessfully', (req, res) =>{
 	console.log(req.body);
 	const topicToJoin = req.body.topic;
-	const userID = req.body.userId;
-	if (!req.body.topic || !req.body.UserId) {
+	const userID = req.body.userID;
+	if (!req.body.topic || !req.body.userID) {
 		res.status(400);
 		return res.send({errorMsg: "Please provide both a topic name and userID to utilize this endpoint"});
 	}
