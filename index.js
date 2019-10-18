@@ -69,7 +69,7 @@ app.get('/', (req, res)=>{
 })
 
 //return a list of all open chats in the db. Needs to be set up with routing before use
-app.get('/GetTopicList', (req, res)=>{
+app.get('/getTopicList', (req, res)=>{
 	res.status(200);
 	db.collection('openChats', function(error, coll) {
 		coll.find({}).toArray(function(err, chats) {
