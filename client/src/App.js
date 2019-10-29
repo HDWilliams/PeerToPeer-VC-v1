@@ -1,15 +1,17 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import PeerContainer from "./components/PeerContainer.js";
+import UserList from "./components/UserList.js";
+import CreateTopic from "./components/CreateTopic.js";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <PeerContainer />
       </header>
+      <CreateTopic />
+      <UserList />
     </div>
   );
 }

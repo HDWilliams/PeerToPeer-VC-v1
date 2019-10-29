@@ -3,9 +3,10 @@ import axios from 'axios';
 import UserItem from './UserItem.js'
 class UserList extends React.Component{
 	constructor(props){
+		super(props);
 		this.state = {
 			users:[]
-		}
+		};
 	}
 
 	componentDidMount(){
@@ -16,10 +17,11 @@ class UserList extends React.Component{
 	}
 
 	render(){
+		let users = this.state.users;
 		return(
-			{this.state.users.map((data) =>
-			    <UserItem userID={data.userID} name={data.name}/>
-			)}
+			<div>
+				{users.map((data) => <UserItem userID={data.userID} name={data.name}/>)}
+			</div>
 		)
 	}
 }
