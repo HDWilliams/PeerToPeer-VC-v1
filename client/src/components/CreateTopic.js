@@ -10,13 +10,13 @@ class CreateTopic extends React.Component{
 	render(){
 		return(
 			<div>
-				<form action="https://vc-v1.herokuapp.com/createChat" method="post" >
-					<fieldset>
+				<form class="ui form" action="https://vc-v1.herokuapp.com/createChat" method="post" >
+					<div class="field">
 						<legend>I want to make a Topic to chat with my friends:</legend>
 						Topic Name <br />
 						<input type='text' placeholder="Enter your" />
 						<input type="submit" value="Create My Topic" />
-					</fieldset>
+					</div>
 				</form>
 			</div>
 		)

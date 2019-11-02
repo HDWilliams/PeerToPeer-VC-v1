@@ -19,7 +19,7 @@ class UserList extends React.Component{
 	render(){
 		let users = this.state.users;
 		return(
-			<div>
+			<div class="ui list">
 				{users.map((data) => <UserItem userID={data.userID} name={data.name}/>)}
 			</div>
 		)

@@ -11,10 +11,8 @@ class UserItem extends React.Component{
 
 	render() {
 		return(
-			<div>
-				<span>
-					{this.state.name}
-				</span>
+			<div class="item">
+				{this.state.name}
 			</div>
 		)
 	}
