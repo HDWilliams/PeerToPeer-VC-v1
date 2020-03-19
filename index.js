@@ -9,7 +9,7 @@ const bodyParser = require('body-parser')
 const URI = process.env.MONGODB_URI;
 
 
-const MongoClient = require('mongodb').MongoClient;
+MongoClient = require('mongodb').MongoClient;
 
 let db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   assert.equal(null, error);
@@ -17,6 +17,9 @@ let db = MongoClient.connect(process.env.MONGODB_URI, function (error, client) {
   db = client.db('heroku_xr0pdhrx');
 });
 
+module.exports = {
+	database: db
+}
 
 const app = express();
 
